@@ -1,5 +1,5 @@
 /*
-scrollConverter
+scrollConverter 1.0
 https://github.com/koggdal/scroll-converter
 
 Copyright 2011 Johannes Koggdal (http://koggdal.com/)
