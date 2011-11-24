@@ -1,0 +1,54 @@
+Introduction
+------------
+
+This script was created during a project when I was working at the web agency BombayWorks. I did some testing in different browsers to know how to do this. The project only required support down to IE 8, so IE 6 and 7 are not in the test results, but they probably give the same result, because it works equally good in these versions.
+
+
+
+Browser differences
+-------------------
+
+There are two properties where you can access wheel data: wheelDelta and detail.
+All browsers except Firefox use wheelData, but Opera gives another value than the rest.
+All browsers except IE8 also use detail, but only Firefox and Opera give a correct result.
+
+Below are the different browsers that show the same result for each property.
+
+wheelDelta
+ IE8
+ IE9
+ Safari (val * 10 will be the same as the others)
+ Chrome
+
+detail
+ Firefox
+ Opera
+
+For one scroll update these values will be returned from each property.
+ wheelDelta: -120
+ detail: 1
+
+The values vary though, depending on the input device. Trackpads in Safari outputs
+ a much lower value to give a smoother experience.
+
+
+
+Test results
+------------
+These are the test values from each browser, using a regular mouse wheel, scrolling 1 step
+
+wheelDelta
+ Safari: -12
+ Chrome: -120
+ Firefox: undefined
+ Opera: -40
+ IE8: -120
+ IE9: -120
+
+detail
+ Safari: 0
+ Chrome: 0
+ Firefox: 1
+ Opera: 1
+ IE8: undefined
+ IE9: 0

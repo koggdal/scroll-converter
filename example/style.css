@@ -1,0 +1,12 @@
+body {
+	background: #222;
+	width: 5000px;
+	position: absolute;
+}
+.page {
+	width: 520px;
+	padding: 40px;
+	background: #fff;
+	float: left;
+	margin: 0 200px;
+}
