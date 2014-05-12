@@ -16,6 +16,9 @@ window.scrollConverter = (function (window, document, undefined) {
 		hasDeactivated = false,
 		eventsBound = false;
 
+	var mouseWheelHandler;
+	var scrollHandler;
+
 	// Private methods
 	var scrollCallback = function (offset, event, callback) {
 
@@ -117,24 +120,51 @@ window.scrollConverter = (function (window, document, undefined) {
 					offset.setByScript = false;
 				};
 
+			mouseWheelHandler = callback;
+			scrollHandler = updateOffsetOnScroll;
+
 			// Safari, Chrome, Opera, IE9+
 			if (window.addEventListener) {
 
 				// Safari, Chrome, Opera, IE9
 				if ("onmousewheel" in window) {
-					window.addEventListener("mousewheel", callback, false);
-					window.addEventListener("scroll", updateOffsetOnScroll, false);
+					window.addEventListener("mousewheel", mouseWheelHandler, false);
+					window.addEventListener("scroll", scrollHandler, false);
 				}
 				// Firefox
 				else {
-					window.addEventListener("DOMMouseScroll", callback, false);
-					window.addEventListener("scroll", updateOffsetOnScroll, false);
+					window.addEventListener("DOMMouseScroll", mouseWheelHandler, false);
+					window.addEventListener("scroll", scrollHandler, false);
 				}
 			}
 			// IE8 and below
 			else {
-				document.attachEvent("onmousewheel", callback);
-				window.attachEvent("onscroll", updateOffsetOnScroll);
+				document.attachEvent("onmousewheel", mouseWheelHandler);
+				window.attachEvent("onscroll", scrollHandler);
+			}
+		},
+
+		unbindEvents = function () {
+			if (!mouseWheelHandler && !scrollHandler) return;
+
+			// Safari, Chrome, Opera, IE9+
+			if (window.removeEventListener) {
+
+				// Safari, Chrome, Opera, IE9
+				if ("onmousewheel" in window) {
+					window.removeEventListener("mousewheel", mouseWheelHandler, false);
+					window.removeEventListener("scroll", scrollHandler, false);
+				}
+				// Firefox
+				else {
+					window.removeEventListener("DOMMouseScroll", mouseWheelHandler, false);
+					window.removeEventListener("scroll", scrollHandler, false);
+				}
+			}
+			// IE8 and below
+			else {
+				document.detachEvent("onmousewheel", mouseWheelHandler);
+				window.detachEvent("onscroll", scrollHandler);
 			}
 		},
 
@@ -174,6 +204,11 @@ window.scrollConverter = (function (window, document, undefined) {
 
 		deactivate: function () {
 			active = false;
+
+			if (eventsBound) {
+				unbindEvents();
+				eventsBound = false;
+			}
 		},
 
 		deactivateAllScrolling: function () {
