@@ -2,7 +2,7 @@
 scrollConverter 1.0.1
 https://github.com/koggdal/scroll-converter
 
-Copyright 2011 Johannes Koggdal (http://koggdal.com/)
+Copyright 2011–2017 Johannes Koggdal (http://koggdal.com/)
 Developed for BombayWorks (http://bombayworks.com/)
 
 Released under MIT license
