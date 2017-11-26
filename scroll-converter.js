@@ -24,7 +24,7 @@ window.scrollConverter = (function (window, document, undefined) {
 
 			// Abort the scrolling if it's inactive
 			if (!active) {
-				return;
+				return true;
 			}
 
 			var delta, numPixelsPerStep, change, newOffset,
@@ -39,6 +39,15 @@ window.scrollConverter = (function (window, document, undefined) {
 			scrollWidth = document.body.scrollWidth || 0;
 			winWidth = docElem ? docElem.clientWidth : 0;
 			maxOffset = Math.max(docOffset, scrollWidth) - winWidth;
+
+			// Chrome and Safari seem to get interference when scrolling horizontally
+			// with a trackpad, so if the scroll is horizontal we just ignore it here
+			// and let the browser scroll like normal. These properties don't exist in
+			// all browsers, but it also seems to work fine in other browsers, so this
+			// is fine.
+			if (Math.abs(event.wheelDeltaX) > Math.abs(event.wheelDeltaY)) {
+				return true;
+			}
 
 			// "Normalize" the wheel value across browsers
 			//  The delta value after this will not be the same for all browsers.
@@ -76,6 +85,8 @@ window.scrollConverter = (function (window, document, undefined) {
 			if (typeof callback === "function") {
 				callback(offset);
 			}
+
+			return false;
 		},
 
 		getOffset = function (axis) {
@@ -99,14 +110,16 @@ window.scrollConverter = (function (window, document, undefined) {
 					e = e || window.event;
 
 					// Trigger the scroll behavior
-					scrollCallback(offset, e, cb);
+					var shouldPreventDefault = scrollCallback(offset, e, cb) === false;
 
 					// Prevent the normal scroll action to happen
-					if (e.preventDefault && e.stopPropagation) {
-						e.preventDefault();
-						e.stopPropagation();
-					} else {
-						return false;
+					if (shouldPreventDefault) {
+						if (e.preventDefault && e.stopPropagation) {
+							e.preventDefault();
+							e.stopPropagation();
+						} else {
+							return false;
+						}
 					}
 				},
 
