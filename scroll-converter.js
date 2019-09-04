@@ -1,8 +1,8 @@
 /*
-scrollConverter 1.0.2
+scrollConverter 1.0.3
 https://github.com/koggdal/scroll-converter
 
-Copyright 2011–2017 Johannes Koggdal (http://koggdal.com/)
+Copyright 2011–2019 Johannes Koggdal (http://koggdal.com/)
 Developed for BombayWorks (http://bombayworks.com/)
 
 Released under MIT license
@@ -89,6 +89,20 @@ window.scrollConverter = (function (window, document, undefined) {
 			return false;
 		},
 
+		supportsEventListenerPassiveOption = function () {
+			var supportsPassiveOption = false;
+			try {
+				var options = Object.defineProperty({}, 'passive', {
+					get: function() {
+						supportsPassiveOption = true;
+					}
+				});
+				window.addEventListener('test', null, options);
+				window.removeEventListener('test', null, options);
+			} catch (error) {}
+			return supportsPassiveOption;
+		},
+
 		getOffset = function (axis) {
 			axis = axis.toUpperCase();
 			var pageOffset = "page" + axis + "Offset",
@@ -138,16 +152,19 @@ window.scrollConverter = (function (window, document, undefined) {
 
 			// Safari, Chrome, Opera, IE9+
 			if (window.addEventListener) {
+				var useCaptureOrOptions = supportsEventListenerPassiveOption()
+					? { capture: false, passive: false }
+					: false;
 
 				// Safari, Chrome, Opera, IE9
 				if ("onmousewheel" in window) {
-					window.addEventListener("mousewheel", mouseWheelHandler, false);
-					window.addEventListener("scroll", scrollHandler, false);
+					window.addEventListener("mousewheel", mouseWheelHandler, useCaptureOrOptions);
+					window.addEventListener("scroll", scrollHandler, useCaptureOrOptions);
 				}
 				// Firefox
 				else {
-					window.addEventListener("DOMMouseScroll", mouseWheelHandler, false);
-					window.addEventListener("scroll", scrollHandler, false);
+					window.addEventListener("DOMMouseScroll", mouseWheelHandler, useCaptureOrOptions);
+					window.addEventListener("scroll", scrollHandler, useCaptureOrOptions);
 				}
 			}
 			// IE8 and below
@@ -162,16 +179,19 @@ window.scrollConverter = (function (window, document, undefined) {
 
 			// Safari, Chrome, Opera, IE9+
 			if (window.removeEventListener) {
+				var useCaptureOrOptions = supportsEventListenerPassiveOption()
+					? { capture: false, passive: false }
+					: false;
 
 				// Safari, Chrome, Opera, IE9
 				if ("onmousewheel" in window) {
-					window.removeEventListener("mousewheel", mouseWheelHandler, false);
-					window.removeEventListener("scroll", scrollHandler, false);
+					window.removeEventListener("mousewheel", mouseWheelHandler, useCaptureOrOptions);
+					window.removeEventListener("scroll", scrollHandler, useCaptureOrOptions);
 				}
 				// Firefox
 				else {
-					window.removeEventListener("DOMMouseScroll", mouseWheelHandler, false);
-					window.removeEventListener("scroll", scrollHandler, false);
+					window.removeEventListener("DOMMouseScroll", mouseWheelHandler, useCaptureOrOptions);
+					window.removeEventListener("scroll", scrollHandler, useCaptureOrOptions);
 				}
 			}
 			// IE8 and below
@@ -207,7 +227,10 @@ window.scrollConverter = (function (window, document, undefined) {
 			// Remove event handlers if it was previously deactivated
 			if (hasDeactivated) {
 				if (window.addEventListener) {
-					window.removeEventListener("scroll", deactivateScrolling, true);
+					var useCaptureOrOptions = supportsEventListenerPassiveOption()
+						? { capture: true, passive: false }
+						: true;
+					window.removeEventListener("scroll", deactivateScrolling, useCaptureOrOptions);
 				} else {
 					window.detachEvent("onscroll", deactivateScrolling);
 				}
@@ -232,7 +255,10 @@ window.scrollConverter = (function (window, document, undefined) {
 
 			// Bind event handlers to disable the scroll
 			if (window.addEventListener) {
-				window.addEventListener("scroll", deactivateScrolling, true);
+				var useCaptureOrOptions = supportsEventListenerPassiveOption()
+					? { capture: true, passive: false }
+					: true;
+				window.addEventListener("scroll", deactivateScrolling, useCaptureOrOptions);
 			} else {
 				window.attachEvent("onscroll", deactivateScrolling);
 			}
