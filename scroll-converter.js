@@ -1,8 +1,8 @@
 /*
-scrollConverter 1.0.3
+scrollConverter 1.0.4
 https://github.com/koggdal/scroll-converter
 
-Copyright 2011–2019 Johannes Koggdal (http://koggdal.com/)
+Copyright 2011–2020 Johannes Koggdal (http://koggdal.com/)
 Developed for BombayWorks (http://bombayworks.com/)
 
 Released under MIT license
