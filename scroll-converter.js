@@ -48,16 +48,23 @@ window.scrollConverter = (function (window, document, undefined) {
 			if (Math.abs(event.wheelDeltaX) >= Math.abs(event.wheelDeltaY)) {
 				return true;
 			}
+			if (Math.abs(event.deltaX) >= Math.abs(event.deltaY)) {
+				return true;
+			}
 
 			// "Normalize" the wheel value across browsers
 			//  The delta value after this will not be the same for all browsers.
 			//  Instead, it is normalized in a way to try to give a pretty similar feeling in all browsers.
-			// 
-			//  Firefox and Opera
-			if (event.detail) {
+			//
+			// Standard API
+			if ("deltaY" in event) {
+				delta = event.deltaY * -10;
+			}
+			// Old Firefox and Opera
+			else if (event.detail) {
 				delta = event.detail * -240;
 			}
-			// IE, Safari and Chrome
+			// Old IE, Safari and Chrome
 			else if (event.wheelDelta) {
 				delta = event.wheelDelta * 5;
 			}
@@ -156,16 +163,20 @@ window.scrollConverter = (function (window, document, undefined) {
 					? { capture: false, passive: false }
 					: false;
 
-				// Safari, Chrome, Opera, IE9
-				if ("onmousewheel" in window) {
-					window.addEventListener("mousewheel", mouseWheelHandler, useCaptureOrOptions);
-					window.addEventListener("scroll", scrollHandler, useCaptureOrOptions);
+				// Standard API
+				if ("onwheel" in window) {
+					window.addEventListener("wheel", mouseWheelHandler, useCaptureOrOptions);
 				}
-				// Firefox
+				// Old browsers
+				else if ("onmousewheel" in window) {
+					window.addEventListener("mousewheel", mouseWheelHandler, useCaptureOrOptions);
+				}
+				// Old Firefox
 				else {
 					window.addEventListener("DOMMouseScroll", mouseWheelHandler, useCaptureOrOptions);
-					window.addEventListener("scroll", scrollHandler, useCaptureOrOptions);
 				}
+
+				window.addEventListener("scroll", scrollHandler, useCaptureOrOptions);
 			}
 			// IE8 and below
 			else {
@@ -177,22 +188,25 @@ window.scrollConverter = (function (window, document, undefined) {
 		unbindEvents = function () {
 			if (!mouseWheelHandler && !scrollHandler) return;
 
-			// Safari, Chrome, Opera, IE9+
 			if (window.removeEventListener) {
 				var useCaptureOrOptions = supportsEventListenerPassiveOption()
 					? { capture: false, passive: false }
 					: false;
 
-				// Safari, Chrome, Opera, IE9
-				if ("onmousewheel" in window) {
-					window.removeEventListener("mousewheel", mouseWheelHandler, useCaptureOrOptions);
-					window.removeEventListener("scroll", scrollHandler, useCaptureOrOptions);
+				// Standard API
+				if ("onwheel" in window) {
+					window.removeEventListener("wheel", mouseWheelHandler, useCaptureOrOptions);
 				}
-				// Firefox
+				// Old browsers
+				else if ("onmousewheel" in window) {
+					window.removeEventListener("mousewheel", mouseWheelHandler, useCaptureOrOptions);
+				}
+				// Old Firefox
 				else {
 					window.removeEventListener("DOMMouseScroll", mouseWheelHandler, useCaptureOrOptions);
-					window.removeEventListener("scroll", scrollHandler, useCaptureOrOptions);
 				}
+
+				window.removeEventListener("scroll", scrollHandler, useCaptureOrOptions);
 			}
 			// IE8 and below
 			else {
