@@ -45,7 +45,7 @@ window.scrollConverter = (function (window, document, undefined) {
 			// and let the browser scroll like normal. These properties don't exist in
 			// all browsers, but it also seems to work fine in other browsers, so this
 			// is fine.
-			if (Math.abs(event.wheelDeltaX) > Math.abs(event.wheelDeltaY)) {
+			if (Math.abs(event.wheelDeltaX) >= Math.abs(event.wheelDeltaY)) {
 				return true;
 			}
 
